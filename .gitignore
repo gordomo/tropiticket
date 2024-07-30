@@ -1,0 +1,5 @@
+Attendize/.env
+Attendize/.dockerignore
+Attendize/composer.json
+Attendize/composer.lock
+mysql/*
