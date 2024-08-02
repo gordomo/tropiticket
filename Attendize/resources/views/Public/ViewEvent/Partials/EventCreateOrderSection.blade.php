@@ -88,7 +88,7 @@
                     </div>
                 </div>
                 <div class="row"><div class="col-md-12">&nbsp;</div></div>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <div class="custom-checkbox">
@@ -97,7 +97,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="row"><div class="col-md-12">&nbsp;</div></div>
                 <div class="row hidden" id="business_details">
                     <div class="col-md-12">
@@ -154,16 +154,17 @@
                     </div>
                 </div>
                 <div class="row"><div class="col-md-12">&nbsp;</div></div>
-                <div class="p20 pl0">
-                    <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="mirror_buyer_info">
-                        @lang("Public_ViewEvent.copy_buyer")
-                    </a>
-                </div>
+                
 
                 <div class="row">
                     <div class="col-md-12">
                         <div class="ticket_holders_details" >
-                            <h3>@lang("Public_ViewEvent.ticket_holder_information")</h3>
+                            <h3 class="pl0 pb10 mb10 mt10">@lang("Public_ViewEvent.ticket_holder_information")</h3>
+                            <div class="pl0 pb10 mb10 mt10">
+                                <a href="javascript:void(0);" class="btn btn-primary btn-xl" id="mirror_buyer_info" style="text-wrap: pretty; width: 100%">
+                                    @lang("Public_ViewEvent.copy_buyer")
+                                </a>
+                            </div>
                             <?php
                                 $total_attendee_increment = 0;
                             ?>

@@ -799,22 +799,29 @@ class EventCheckoutController extends Controller
             abort(404);
         }
 
-        $orderService = new OrderService($order->amount, $order->organiser_booking_fee, $order->event);
-        $orderService->calculateFinalCosts();
-
-        $data = [
-            'order'        => $order,
-            'orderService' => $orderService,
-            'event'        => $order->event,
-            'tickets'      => $order->event->tickets,
-            'is_embedded'  => $this->is_embedded,
-        ];
-
-        if ($this->is_embedded) {
-            return view('Public.ViewEvent.Embedded.EventPageViewOrder', $data);
+        if ($order->is_payment_received != 1) {
+            abort(404);
+        }
+        $images = [];
+        $imgs = $order->event->images;
+        foreach ($imgs as $img) {
+            $images[] = base64_encode(file_get_contents(public_path($img->image_path)));
         }
 
-        return view('Public.ViewEvent.EventPageViewOrder', $data);
+        $data = [
+            'order'     => $order,
+            'event'     => $order->event,
+            'tickets'   => $order->event->tickets,
+            'attendees' => $order->attendees,
+            'css'       => file_get_contents(public_path('assets/stylesheet/ticket.css')),
+            'image'     => base64_encode(file_get_contents(public_path($order->event->organiser->full_logo_path))),
+            'images'    => $images,
+        ];
+
+        if ($request->get('download') == '1') {
+            return PDF::html('Public.ViewEvent.Partials.PDFTicket', $data, 'Tickets');
+        }
+        return view('Public.ViewEvent.Partials.PDFTicket', $data);
     }
 
 }
