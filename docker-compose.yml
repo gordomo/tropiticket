@@ -1,7 +1,7 @@
 services:
-  nginx_att: # 1er servicio: nginx
+  nginx_att_3: # 1er servicio: nginx
     image: nginx:stable-alpine # imagen de docker hub que vamos a usar
-    container_name: nginx_att # nombre para referirse al servicio
+    container_name: nginx_att_3 # nombre para referirse al servicio
     ports:
       - "8001:80" # puerto de mi pc:puerto del servicio
     volumes:
@@ -9,14 +9,14 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf # archivo local / reflejado en archivo de la imagen
       - ./nginx/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on: # para correr este servicio debe estar corriendo php y mysql antes
-      - php_att
-      - mysql_att
+      - php_att_3
+      - mysql_att_3
     networks: # la red que los conecta se llama laravel
       - laravel
 
-  mysql_att: # 2do servici
+  mysql_att_3: # 2do servici
     image: mysql:5.7 # imagen de docker hub
-    container_name: mysql_att # nombre de referencia del servicio
+    container_name: mysql_att_3 # nombre de referencia del servicio
     tty: true # aqui si le fallo joven xD, 👀 leo los comentarios
     ports:
       - "33070:3306" # puerto local:puerto del servicio
@@ -27,15 +27,15 @@ services:
       MYSQL_USER: 'blugrin_db'
       MYSQL_PASSWORD: 'Gr1ns0ft22'
       MYSQL_ROOT_PASSWORD: 'rootGr1ns0ft22'
-      SERVICE_NAME: mysql_att
+      SERVICE_NAME: mysql_att_3
     networks:
       - laravel # red
 
-  php_att: # 3er servicio
+  php_att_3: # 3er servicio
     build: # este se construira aqui mismo
       context: . # ruta de referencia ./
       dockerfile: Dockerfile # nombre del archivo de configuracion de la imagen
-    container_name: php_att
+    container_name: php_att_3
     environment:
       UPLOAD_LIMIT: 512M
     ports:
@@ -47,11 +47,11 @@ services:
     networks:
       - laravel # red
 
-  phpmyadmin:
-    container_name: phpmyadmin
+  phpmyadmin_3:
+    container_name: phpmyadmin_3
     image: phpmyadmin/phpmyadmin
     depends_on:
-      - mysql_att
+      - mysql_att_3
     ports:
       - 8013:80
     environment:
@@ -59,7 +59,7 @@ services:
       MYSQL_PASSWORD: Gr1ns0ft22
       MYSQL_ROOT_PASSWORD: rootGr1ns0ft22
       UPLOAD_LIMIT: 640M
-      PMA_HOST: mysql_att
+      PMA_HOST: mysql_att_3
     restart: always
     networks:
       - laravel # red
