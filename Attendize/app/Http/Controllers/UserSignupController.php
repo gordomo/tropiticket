@@ -40,7 +40,10 @@ class UserSignupController extends Controller
     public function showSignup()
     {
         $is_attendize = Utils::isAttendize();
-        if (Auth::user() && Auth::user()->email == 'morimartin@gmail.com') {
+
+        $thereIsNotUserYet = User::all()->count() == 0;
+        
+        if ($thereIsNotUserYet || Auth::user() && Auth::user()->email == 'morimartin@gmail.com') {
             return view('Public.LoginAndRegister.Signup', compact('is_attendize'));
         } else {
             return view('Public.Errors.Generic', [

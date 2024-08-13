@@ -47,5 +47,22 @@ services:
     networks:
       - laravel # red
 
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - mysql_att
+    ports:
+      - 8013:80
+    environment:
+      MYSQL_USER: blugrin_db
+      MYSQL_PASSWORD: Gr1ns0ft22
+      MYSQL_ROOT_PASSWORD: rootGr1ns0ft22
+      UPLOAD_LIMIT: 640M
+      PMA_HOST: mysql_att
+    restart: always
+    networks:
+      - laravel # red
+
 networks: # declaracion de la red
   laravel:
