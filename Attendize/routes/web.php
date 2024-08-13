@@ -109,6 +109,16 @@ Route::group(
         )->name('postResetPassword')->middleware('throttle:3,1');
 
         /*
+         * Registration / Account creation
+         */
+        Route::get('/signup',
+            [UserSignupController::class, 'showSignup']
+        )->name('showSignup');
+
+        Route::post('/signup',
+            [UserSignupController::class, 'postSignup'])->middleware('throttle:3,1');
+
+        /*
          * Confirm Email
          */
         Route::get('signup/confirm_email/{confirmation_code}',
@@ -204,16 +214,6 @@ Route::group(
     Route::group(['middleware' => ['auth', 'first.run']], function () {
 
         /*
-         * Registration / Account creation
-         */
-        Route::get('/signup',
-            [UserSignupController::class, 'showSignup']
-        )->name('showSignup');
-
-        Route::post('/signup',
-            [UserSignupController::class, 'postSignup'])->middleware('throttle:3,1');
-
-        /*
          * Edit User
          */
         Route::group(['prefix' => 'user'], function () {
@@ -278,7 +278,7 @@ Route::group(
 
             Route::get('create',
                 [OrganiserController::class, 'showCreateOrganiser']
-            )->name('showCreateOrganiser')->middleware('AllowForAdminUser');
+            )->name('showCreateOrganiser');
 
             Route::post('create',
                 [OrganiserController::class, 'postCreateOrganiser']

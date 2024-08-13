@@ -11,6 +11,7 @@ use App\Models\AccountPaymentGateway;
 use Hash;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Mail;
 use Services\Captcha\Factory;
 use Illuminate\Support\Facades\Lang;
@@ -39,7 +40,14 @@ class UserSignupController extends Controller
     public function showSignup()
     {
         $is_attendize = Utils::isAttendize();
-        return view('Public.LoginAndRegister.Signup', compact('is_attendize'));
+        if (Auth::user() && Auth::user()->email == 'morimartin@gmail.com') {
+            return view('Public.LoginAndRegister.Signup', compact('is_attendize'));
+        } else {
+            return view('Public.Errors.Generic', [
+                'message' => trans("error.unauthorized"),
+            ]);
+        }
+        
     }
 
     /**

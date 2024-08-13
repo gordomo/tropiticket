@@ -18,7 +18,10 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         if (Auth::guard($guard)->check()) {
-            return redirect(route('showSelectOrganiser'));
+            if (Auth::user()->email != 'morimartin@gmail.com') {
+                return redirect(route('showSelectOrganiser'));
+            }
+            
         }
 
         return $next($request);
