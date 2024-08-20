@@ -55,8 +55,14 @@ class SendOrderConfirmationMail extends Mailable
             "Controllers.tickets_for_event",
             ["event" => $this->order->event->title]
         );
-        return $this->subject($subject)
+        if ( $this->order->is_payment_received === 1 ) {
+            return $this->subject($subject)
                     ->attach($file_path)
                     ->view('Emails.OrderConfirmation');
+        } else {
+            return $this->subject($subject)
+                    ->view('Emails.OrderConfirmation');
+        }
+        
     }
 }

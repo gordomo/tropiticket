@@ -153,10 +153,8 @@ class EventCheckoutController extends Controller
             $reservedTickets->session_id = session()->getId();
             $reservedTickets->save();
 
-            for ($i = 0; $i < $current_ticket_quantity; $i++) {
-                /*
-                 * Create our validation rules here
-                 */
+           /*  for ($i = 0; $i < $current_ticket_quantity; $i++) {
+                
                 $validation_rules['ticket_holder_first_name.' . $i . '.' . $ticket_id] = ['required'];
                 $validation_rules['ticket_holder_last_name.' . $i . '.' . $ticket_id] = ['required'];
                 $validation_rules['ticket_holder_email.' . $i . '.' . $ticket_id] = ['required', 'email'];
@@ -166,16 +164,14 @@ class EventCheckoutController extends Controller
                 $validation_messages['ticket_holder_email.' . $i . '.' . $ticket_id . '.required'] = 'Ticket holder ' . ($i + 1) . '\'s email is required';
                 $validation_messages['ticket_holder_email.' . $i . '.' . $ticket_id . '.email'] = 'Ticket holder ' . ($i + 1) . '\'s email appears to be invalid';
 
-                /*
-                 * Validation rules for custom questions
-                 */
+                
                 foreach ($ticket->questions as $question) {
                     if ($question->is_required && $question->is_enabled) {
                         $validation_rules['ticket_holder_questions.' . $ticket_id . '.' . $i . '.' . $question->id] = ['required'];
                         $validation_messages['ticket_holder_questions.' . $ticket_id . '.' . $i . '.' . $question->id . '.required'] = "This question is required";
                     }
                 }
-            }
+            } */
         }
 
         if (empty($tickets)) {
@@ -349,7 +345,13 @@ class EventCheckoutController extends Controller
     public function showEventPayment(Request $request, $event_id)
     {
         $order_session = session()->get('ticket_order_' . $event_id);
-        //TODO cuando se muere la sesión, este codigo de abajo se rompe por referencias nulas
+        
+        if (!$order_session || $order_session['expires'] < Carbon::now()) {
+            $route_name = $this->is_embedded ? 'showEmbeddedEventPage' : 'showEventPage';
+            return redirect()->route($route_name, ['event_id' => $event_id]);
+        }
+
+
         $event = Event::findOrFail($event_id);
 
         $payment_gateway = $order_session['payment_gateway'];
@@ -647,15 +649,45 @@ class EventCheckoutController extends Controller
                 $orderItem->unit_booking_fee = $attendee_details['ticket']['booking_fee'] + $attendee_details['ticket']['organiser_booking_fee'];
                 $orderItem->save();
 
+            /*
+             * Add the attendees
+             */
+
+            foreach ($ticket_order['tickets'] as $attendee_details) {
+                
+                /*
+                 * Update ticket's quantity sold
+                 */
+                $ticket = Ticket::findOrFail($attendee_details['ticket']['id']);
+
+                /*
+                 * Update some ticket info
+                 */
+                $ticket->increment('quantity_sold', $attendee_details['qty']);
+                $ticket->increment('sales_volume', ($attendee_details['ticket']['price'] * $attendee_details['qty']));
+                $ticket->increment('organiser_fees_volume',
+                    ($attendee_details['ticket']['organiser_booking_fee'] * $attendee_details['qty']));
+
+                /*
+                 * Insert order items (for use in generating invoices)
+                 */
+                $orderItem = new OrderItem();
+                $orderItem->title = $attendee_details['ticket']['title'];
+                $orderItem->quantity = $attendee_details['qty'];
+                $orderItem->order_id = $order->id;
+                $orderItem->unit_price = $attendee_details['ticket']['price'];
+                $orderItem->unit_booking_fee = $attendee_details['ticket']['booking_fee'] + $attendee_details['ticket']['organiser_booking_fee'];
+                $orderItem->save();
+
                 /*
                  * Create the attendees
                  */
                 for ($i = 0; $i < $attendee_details['qty']; $i++) {
 
                     $attendee = new Attendee();
-                    $attendee->first_name = sanitise($request_data["ticket_holder_first_name"][$i][$attendee_details['ticket']['id']]);
-                    $attendee->last_name = sanitise($request_data["ticket_holder_last_name"][$i][$attendee_details['ticket']['id']]);
-                    $attendee->email = sanitise($request_data["ticket_holder_email"][$i][$attendee_details['ticket']['id']]);
+                    $attendee->first_name = sanitise($request_data['order_first_name']);
+                    $attendee->last_name = sanitise($request_data['order_last_name']);
+                    $attendee->email = sanitise($request_data['order_email']);
                     $attendee->event_id = $event_id;
                     $attendee->order_id = $order->id;
                     $attendee->ticket_id = $attendee_details['ticket']['id'];
@@ -697,7 +729,10 @@ class EventCheckoutController extends Controller
                     /* Keep track of total number of attendees */
                     $attendee_increment++;
                 }
+               
             }
+                
+        }
 
         
         //save the order to the database
@@ -718,10 +753,10 @@ class EventCheckoutController extends Controller
         Log::debug('Queueing Order Tickets Job - Send order confirmation to ticket buyer');
         SendOrderConfirmationJob::dispatch($order, $orderService);
         // Send tickets to attendees
-        Log::debug('Queueing Attendee Ticket Jobs - Send tickets to attendees');
+        /* Log::debug('Queueing Attendee Ticket Jobs - Send tickets to attendees');
         foreach ($order->attendees as $attendee) {
             SendOrderAttendeeTicketJob::dispatch($attendee);
-        }
+        } */
         Log::debug('Queueing Attendee Ticket Job Done');
 
         if ($return_json) {

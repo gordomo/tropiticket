@@ -43,5 +43,6 @@ class SendOrderConfirmationJob implements ShouldQueue
         Mail::to($this->order->email)
             ->locale(Config::get('app.locale'))
             ->send($mail);
+        
     }
 }

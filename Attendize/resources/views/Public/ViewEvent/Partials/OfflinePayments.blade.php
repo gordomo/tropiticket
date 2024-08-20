@@ -4,14 +4,10 @@
 {!! Form::open(['url' => route('postCreateOrder', ['event_id' => $event->id]), 'class' => 'ajax']) !!}
 <div class="offline_payment_toggle">
     <div class="custom-checkbox">
-        @if($payment_gateway === false)
-        {{-- Force offline payment if no gateway --}}
+
         <input type="hidden" name="pay_offline" value="1">
         <input id="pay_offline" type="checkbox" value="1" checked disabled>
-        @else
-        <input data-toggle="toggle" id="pay_offline" name="pay_offline" type="checkbox" value="1">
-        @endif
-        <label for="pay_offline">@lang("Public_ViewEvent.pay_using_offline_methods")</label>
+
     </div>
 </div>
 <div class="offline_payment" style="display: none;">

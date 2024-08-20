@@ -23,9 +23,9 @@ class UserSignupController extends Controller
 
     public function __construct(Guard $auth)
     {
-        if (Account::count() > 0 && !Utils::isAttendize()) {
+        /* if (Account::count() > 0 && !Utils::isAttendize()) {
             return redirect()->route('login')->send();
-        }
+        } */
 
         $this->auth = $auth;
 

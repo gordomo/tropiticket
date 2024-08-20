@@ -146,6 +146,12 @@ class EventOrdersController extends MyBaseController
         $order = Order::scope()->find($order_id);
         $orderService = new OrderService($order->amount, $order->booking_fee, $order->event);
 
+        if ($order->is_payment_received != 1 )  {
+            return response()->json([
+                'status'      => 'error',
+                'message' => 'pago no confirmado',
+            ]);
+        }
         $this->dispatch(new SendOrderConfirmationJob($order, $orderService));
 
         return response()->json([

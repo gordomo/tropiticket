@@ -17,19 +17,29 @@ class EventsApiController extends ApiBaseController
         return Event::scope($this->account_id)->paginate(20);
     }
 
+      /**
+     * @param Request $request
+     * @param $organizer_id
+     * @return mixed
+     */
+    public function show(Request $request, $organizer_id)
+    {
+        return Event::where('organiser_id', $organizer_id)->paginate(10);
+    }
+
     /**
      * @param Request $request
      * @param $attendee_id
      * @return mixed
      */
-    public function show(Request $request, $attendee_id)
+    /* public function show(Request $request, $attendee_id)
     {
         if ($attendee_id) {
             return Event::scope($this->account_id)->find($attendee_id);
         }
 
         return response('Event Not Found', 404);
-    }
+    } */
 
     public function store(Request $request)
     {

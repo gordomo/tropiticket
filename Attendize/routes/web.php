@@ -657,7 +657,7 @@ Route::group(
         });
     });
 
-    Route::get('/',
+    Route::get('/admin',
         [IndexController::class, 'showIndex']
     )->name('index');
 });
