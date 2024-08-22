@@ -11,6 +11,8 @@ services:
     depends_on: # para correr este servicio debe estar corriendo php y mysql antes
       - php_att_3
       - mysql_att_3
+    environment:
+      TZ: America/Argentina/Buenos_Aires
     networks: # la red que los conecta se llama laravel
       - laravel
 
@@ -28,6 +30,7 @@ services:
       MYSQL_PASSWORD: 'Gr1ns0ft22'
       MYSQL_ROOT_PASSWORD: 'rootGr1ns0ft22'
       SERVICE_NAME: mysql_att_3
+      TZ: America/Argentina/Buenos_Aires
     networks:
       - laravel # red
 
@@ -38,6 +41,7 @@ services:
     container_name: php_att_3
     environment:
       UPLOAD_LIMIT: 512M
+      TZ: America/Argentina/Buenos_Aires
     ports:
       - "9001:80"
     volumes: # carpeta de proyecto local : carpeta del container que da vida a los archivos PHP
@@ -60,6 +64,7 @@ services:
       MYSQL_ROOT_PASSWORD: rootGr1ns0ft22
       UPLOAD_LIMIT: 640M
       PMA_HOST: mysql_att_3
+      TZ: America/Argentina/Buenos_Aires
     restart: always
     networks:
       - laravel # red
